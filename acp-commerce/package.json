@@ -1,0 +1,19 @@
+{
+  "name": "stub-reference-acp-commerce",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Reference integration: Stub receipts in an Agentic Commerce Protocol shopping flow",
+  "scripts": {
+    "start": "node agent.js",
+    "demo": "node demo.mjs",
+    "test": "node test.mjs"
+  },
+  "dependencies": {
+    "@getstub/agent": "^0.1.2"
+  },
+  "devDependencies": {
+    "better-sqlite3": "^13.0.1"
+  },
+  "engines": { "node": ">=18" }
+}

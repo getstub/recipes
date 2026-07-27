@@ -1,0 +1,19 @@
+{
+  "name": "stub-reference-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Stub over MCP: a public check server, and the operator-side pattern for issuing",
+  "scripts": {
+    "test": "node test.mjs",
+    "check-server": "node check-server.js",
+    "operator-server": "node operator-server.js"
+  },
+  "dependencies": {
+    "@getstub/agent": "^0.1.2",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": { "better-sqlite3": "^13.0.1" },
+  "engines": { "node": ">=18" }
+}

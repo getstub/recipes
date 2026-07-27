@@ -1,0 +1,5 @@
+getstub>=0.1.0
+langchain>=1.0
+langchain-core>=1.0
+# only needed for live.py:
+# langchain-openai
