@@ -9,21 +9,29 @@
 
 import { tool, generateText, stepCountIs } from 'ai';
 import { z } from 'zod';
-import { Stub, influenced } from '@getstub/agent';
+import { influenced } from '@getstub/agent';
+import { getStub } from './identity.mjs';
 import { catalog, find } from './catalog.js';
 
 // The standing mandate, declared once. Who pays you, and which kinds of
 // conflict exist in your business at all.
-const stub = new Stub({
-  operator: 'AI SDK Reference Agent',
-  operatorId: 'op_aisdk_ref',
-  declared: {
-    paid_by: 'placement fees and commission from featured brands',
-    conflicts: ['placement', 'commission', 'partner_only'],
-  },
-  principalSalt: process.env.STUB_SALT || 'aisdk-reference-salt',
-  ...(process.env.STUB_REGISTRY ? { registry: process.env.STUB_REGISTRY } : {}),
-});
+// One client, created on first use and reused. Your identity lives in
+// .stub-keys.json so the same operator issues every time you run this.
+let _stub;
+async function stubClient() {
+  if (!_stub) {
+    _stub = await getStub({
+      operator: 'AI SDK Reference Agent',
+      suggestion: 'op_yourname_aisdk',
+      declared: {
+        paid_by: 'placement fees and commission from featured brands',
+        conflicts: ['placement', 'commission', 'partner_only'],
+      },
+      salt: 'aisdk-reference-salt',
+    });
+  }
+  return _stub;
+}
 
 // Who the agent is acting for. In a real app this comes from your session.
 export const session = { userId: 'user_demo_1', request: '' };
@@ -85,7 +93,7 @@ export const tools = {
       if (!chosen) return { ok: false, error: 'unknown product' };
 
       // --- the one call: a receipt for the action, issued from your code ---
-      const receipt = await stub.issue({
+      const receipt = await (await stubClient()).issue({
         principal: session.userId,          // hashed here, never sent raw
         agent: 'aisdk-reference',
         requested: session.request || 'purchase via agent',

@@ -5,11 +5,16 @@
   "type": "module",
   "description": "Reference integration: Stub receipts in a raw tool-use loop, no framework",
   "scripts": {
-    "test": "node test.mjs",
     "demo": "node demo.mjs",
     "live": "node live.mjs"
   },
-  "dependencies": { "@getstub/agent": "^0.1.2" },
-  "devDependencies": { "better-sqlite3": "^13.0.1" },
-  "engines": { "node": ">=18" }
+  "dependencies": {
+    "@getstub/agent": "^0.2.2"
+  },
+  "devDependencies": {
+    "better-sqlite3": "^13.0.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
 }

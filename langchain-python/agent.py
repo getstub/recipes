@@ -16,21 +16,22 @@ import os
 
 from langchain_core.tools import tool
 
-from getstub import Stub, influenced
+from getstub import influenced
+from identity import get_stub
 
 from catalog import CATALOG, find
 
 # The standing mandate, declared once. Policy level: who pays you, and which
 # kinds of conflict exist in your business at all.
-stub = Stub(
+# Your identity, loaded from .stub-keys.json or created on the first run.
+stub = get_stub(
     operator="LangChain Reference Agent",
-    operator_id="op_langchain_ref",
+    suggestion="op_yourname_langchain",
     declared={
         "paid_by": "placement fees and commission from featured brands",
         "conflicts": ["placement", "commission", "partner_only"],
     },
-    principal_salt=os.environ.get("STUB_SALT", "langchain-reference-salt"),
-    registry=os.environ.get("STUB_REGISTRY", "https://api.getstub.dev"),
+    salt="langchain-reference-salt",
 )
 
 # Who the agent is acting for. In a real app this comes from your session, and

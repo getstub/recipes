@@ -4,7 +4,7 @@ import { openai } from '@ai-sdk/openai';
 import { run } from './agent.js';
 
 if (!process.env.OPENAI_API_KEY) {
-  console.error('Set OPENAI_API_KEY first. Run `npm run demo` for the offline version.');
+  console.error('Set OPENAI_API_KEY first. Run `npm run demo` for the scripted version.');
   process.exit(1);
 }
 const message = process.argv.slice(2).join(' ') || 'running shoes under 100';

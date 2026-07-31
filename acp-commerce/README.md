@@ -13,16 +13,23 @@ ACP defines how a merchant exposes checkout to an agent. But the agent decides *
 - `catalog.js` a mock product feed. ACP feed fields plus the operator's own commercial flags (paid_placement, commission_pct, partner) that live in ranking code and never appear in a public feed.
 - `acp-checkout.js` a mock of the five ACP checkout endpoints (create, get, complete, cancel) in memory. Stands in for the merchant side. No money moves.
 - `agent.js` the reference agent. Ranks the catalog, surfaces the top item, issues a Stub at the ranking line, then runs ACP checkout.
-- `local-registry.mjs` runs the real registry logic in-process so the reference verifies with no network.
-- `test.mjs` 17 tests covering the disclosures, the privacy property, signature validity, and the checkout.
 
 ## Run it
 
 ```
 npm install
-npm test     # 17 tests, offline, against registry logic on your own machine
-npm run demo # the two-case contrast, influenced vs clean
+export STUB_OPERATOR_ID=op_yourname_shopmate
+npm run demo
 ```
+
+Pick an operator id that is yours. The first run registers it and saves your
+keypair to `.stub-keys.json` in this folder, which is gitignored. Every run
+after that loads the same identity, which is what you will do in production
+with a secrets manager instead of a file.
+
+The receipt it issues is real. It is signed by your key, stored at the
+registry, and the link opens in a browser. It counts against the free tier,
+which is 1,000 stubs a month.
 
 Against the live registry, which issues real receipts you can open in a browser:
 

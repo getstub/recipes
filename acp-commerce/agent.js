@@ -14,24 +14,30 @@
 // no Stripe, no cards. It talks to the live Stub registry so the receipts
 // it produces are real and checkable.
 
-import { Stub, influenced } from '@getstub/agent';
+import { influenced } from '@getstub/agent';
+import { getStub } from './identity.mjs';
 import { catalog } from './catalog.js';
 import { createSession, completeSession } from './acp-checkout.js';
 
 // One operator, declared once. This is the standing mandate: who pays the
 // agent, and which conflict classes exist in its business at all.
-const stub = new Stub({
-  operator: 'ShopMate Reference Agent',
-  operatorId: 'op_shopmate_ref',
-  declared: {
-    paid_by: 'brands it features, via placement fees and commission',
-    conflicts: ['placement', 'commission', 'partner_only'],
-  },
-  // A fixed salt so the same demo user hashes to the same digest across runs.
-  principalSalt: process.env.STUB_SALT || 'acp-reference-demo-salt',
-  // Defaults to the live registry. Set STUB_REGISTRY to point elsewhere.
-  ...(process.env.STUB_REGISTRY ? { registry: process.env.STUB_REGISTRY } : {}),
-});
+// One client, created on first use and reused. Your identity lives in
+// .stub-keys.json so the same operator issues every time you run this.
+let _stub;
+async function stubClient() {
+  if (!_stub) {
+    _stub = await getStub({
+      operator: 'ShopMate Reference Agent',
+      suggestion: 'op_yourname_shopmate',
+      declared: {
+        paid_by: 'brands it features, via placement fees and commission',
+        conflicts: ['placement', 'commission', 'partner_only'],
+      },
+      salt: 'acp-reference-demo-salt',
+    });
+  }
+  return _stub;
+}
 
 // The agent's ranking. In a real agent this is a model plus business rules.
 // Here it is a transparent scorer so you can SEE the commercial influence:
@@ -74,7 +80,7 @@ export async function shop({ userId, query }) {
 
   // --- the one line: issue a receipt for the choice, at the choice ---
   const disclosures = disclosuresFor(winner);
-  const receipt = await stub.issue({
+  const receipt = await (await stubClient()).issue({
     principal: userId,                 // hashed client-side, never sent raw
     agent: 'shopmate-ref',
     requested: query,
@@ -103,7 +109,7 @@ export async function shopHonest({ userId, query }) {
     .sort((a, b) => a.price - b.price)[0];
   console.log(`Agent surfaces: ${honest.title} at $${honest.price}, the lowest price`);
 
-  const receipt = await stub.issue({
+  const receipt = await (await stubClient()).issue({
     principal: userId,
     agent: 'shopmate-ref',
     requested: query,

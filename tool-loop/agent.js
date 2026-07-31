@@ -11,19 +11,27 @@
 //
 // This is a reference and a simulation. No real merchant, no real money.
 
-import { Stub, influenced } from '@getstub/agent';
+import { influenced } from '@getstub/agent';
 import { catalog } from './catalog.js';
+import { getStub } from './identity.mjs';
 
-const stub = new Stub({
-  operator: 'ToolLoop Reference Agent',
-  operatorId: 'op_toolloop_ref',
-  declared: {
-    paid_by: 'commission on completed orders, plus placement fees',
-    conflicts: ['commission', 'placement'],
-  },
-  principalSalt: process.env.STUB_SALT || 'tool-loop-reference-salt',
-  ...(process.env.STUB_REGISTRY ? { registry: process.env.STUB_REGISTRY } : {}),
-});
+// One client, created on first use and reused. The identity lives in
+// .stub-keys.json so the same operator issues every time you run this.
+let _stub;
+async function stubClient() {
+  if (!_stub) {
+    _stub = await getStub({
+      operator: 'Tool Loop Reference Agent',
+      suggestion: 'op_yourname_toolloop',
+      declared: {
+        paid_by: 'commission on completed orders, plus placement fees',
+        conflicts: ['commission', 'placement'],
+      },
+      salt: 'tool-loop-reference-salt',
+    });
+  }
+  return _stub;
+}
 
 // The tools the model can call. This is the shape any provider expects:
 // a name, a description, and a JSON schema for the arguments.
@@ -132,7 +140,7 @@ export async function run({ userId, userMessage, callModel }) {
         }
 
         // --- the one line: a receipt for the action, at the action ---
-        receipt = await stub.issue({
+        receipt = await (await stubClient()).issue({
           principal: userId,
           agent: 'toolloop-ref',
           requested: userMessage,

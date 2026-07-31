@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Reference integration: Stub receipts in a Vercel AI SDK agent",
   "scripts": { "test": "node test.mjs", "demo": "node demo.mjs", "live": "node live.mjs" },
-  "dependencies": { "@getstub/agent": "^0.1.2", "ai": "^7.0.0", "zod": "^3.23.8" },
+  "dependencies": { "@getstub/agent": "^0.2.2", "ai": "^7.0.0", "zod": "^3.23.8" },
   "devDependencies": { "better-sqlite3": "^13.0.1" },
   "engines": { "node": ">=18" }
 }

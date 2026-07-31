@@ -1,18 +1,18 @@
-"""Watch the recommendation happen and read the receipt. No API key needed.
+"""Watch the recommendation happen, then read the receipt it issued.
 
+    export STUB_OPERATOR_ID=op_yourname_fairhaven
     python3 demo.py
+
+No model key needed: the ranking is deterministic. The receipt is real, signed
+by your keypair, and it counts against the free tier.
 """
 import json, os, sys, urllib.request
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import local_registry
-
-srv, url = local_registry.start(port=8801)
-os.environ["STUB_REGISTRY"] = url
-os.environ["STUB_SALT"] = "insurance-demo-salt"
+REGISTRY = os.environ.get("STUB_REGISTRY", "https://api.getstub.dev")
 
 import agent as A
 
-try:
+if True:
     top, receipt, ranked = A.recommend(
         customer_ref="customer_demo_1",
         cover_needed=250000,
@@ -36,7 +36,13 @@ try:
 
     print(f"\nReceipt: {receipt['url']}")
     sid = receipt["url"].rstrip("/").split("/")[-1]
-    with urllib.request.urlopen(f"{url}/resolve/{sid}") as r:
+    # A plain urlopen sends urllib's default user agent, which a lot of edge
+    # networks block. Name yourself and it goes through.
+    req = urllib.request.Request(
+        f"{REGISTRY}/resolve/{sid}",
+        headers={"User-Agent": "stub-recipe-demo"},
+    )
+    with urllib.request.urlopen(req) as r:
         view = json.loads(r.read())["view"]
     print("\nWhat the receipt discloses:")
     for e in view["not_disclosed"]:
@@ -45,5 +51,3 @@ try:
     print(f"Customer reference stored as a digest: {view['principal'][:20]}...")
     print("\nThe advice was not false. It was just not the cheapest,")
     print("and until now there was no way for the customer to see why.")
-finally:
-    local_registry.stop(srv)

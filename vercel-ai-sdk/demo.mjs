@@ -1,6 +1,11 @@
-// Watch the agent run and read the receipt it produced. No API key needed.
-import { startLocalRegistry } from './local-registry.mjs';
-const { reg, restore } = await startLocalRegistry();
+// Watch the agent run, then read the receipt it issued.
+//
+//   export STUB_OPERATOR_ID=op_yourname_aisdk
+//   npm run demo
+//
+// No model key needed: the model is scripted. The receipt is real, signed by
+// your keypair, and it counts against the free tier.
+const REGISTRY = process.env.STUB_REGISTRY || 'https://api.getstub.dev';
 const A = await import('./agent.js');
 const { makeMockModel } = await import('./mock-model.mjs');
 
@@ -18,11 +23,12 @@ const out = buy?.output ?? buy?.result;
 console.log(`\nThe agent bought: ${out.title} at $${out.price}`);
 console.log('Receipt:', out.receipt);
 
-const v = (await reg.resolve(out.receipt.split('/').pop())).view;
+const res2 = await fetch(`${REGISTRY}/resolve/${out.receipt.split('/').pop()}`);
+const v = (await res2.json()).view;
 console.log('\nWhat the receipt discloses:');
 v.not_disclosed.forEach(e => console.log(`  ${e.kind}: ${e.detail || ''}`));
 console.log(`\nPrincipal stored as a digest: ${v.principal.slice(0,20)}...`);
 console.log(`Signature valid: ${v.operator_signature_valid}`);
 console.log('\nThe model did nothing wrong. It bought the top result.');
 console.log('The ranking decided what the top result was.');
-restore();
+console.log('\nOpen the receipt link. Anyone can.');

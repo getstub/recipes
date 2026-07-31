@@ -2,22 +2,25 @@
 
 Working reference integrations for [Stub](https://getstub.dev), the allegiance receipt registry for AI agents.
 
-Each recipe is a runnable agent with Stub wired in at the line where the ranking picks a winner. Clone one, run its tests, read the receipts it produces.
+Each recipe is a runnable agent with Stub wired in at the line where the ranking picks a winner. Clone one, run it, read the receipt it produces.
 
 Every recipe here is a reference and a simulation. No real merchants, no real money, no real users. Nobody is running these in production, and each README says so. The point is to show exactly where a receipt belongs in code you recognise.
 
 ## The recipes
 
-| Recipe | What it shows | Tests | Language |
-|---|---|---|---|
-| [`tool-loop`](./tool-loop) | The primitive every framework wraps. A model, two tools, a loop. | 22 | JavaScript |
-| [`acp-commerce`](./acp-commerce) | Allegiance lives upstream of checkout, in the ranking. | 17 | JavaScript |
-| [`mcp`](./mcp) | A public check server any agent can add, plus the operator issuing pattern. | 21 | JavaScript |
-| [`langchain-python`](./langchain-python) | The same integration inside a LangChain agent. | 20 | Python |
-| [`vercel-ai-sdk`](./vercel-ai-sdk) | The biggest agent surface in JavaScript. | 21 | JavaScript |
-| [`insurance-advice`](./insurance-advice) | The primitive outside commerce, with real stakes. | 17 | Python |
+| Recipe | What it shows | Language |
+|---|---|---|
+| [`tool-loop`](./tool-loop) | The primitive every framework wraps. A model, two tools, a loop. | JavaScript |
+| [`acp-commerce`](./acp-commerce) | Allegiance lives upstream of checkout, in the ranking. | JavaScript |
+| [`mcp`](./mcp) | A public check server any agent can add, plus the operator issuing pattern. | JavaScript |
+| [`langchain-python`](./langchain-python) | The same integration inside a LangChain agent. | Python |
+| [`vercel-ai-sdk`](./vercel-ai-sdk) | The biggest agent surface in JavaScript. | JavaScript |
+| [`insurance-advice`](./insurance-advice) | The primitive outside commerce, with real stakes. | Python |
 
-118 tests in total. All of them run offline, with no API key and without touching our servers.
+Every recipe runs against the live registry and issues real receipts, under an
+operator id you choose. The free tier is 1,000 stubs a month, so trying all six
+costs nothing. There is no offline mode and no mock registry: the only way to
+issue a stub is to issue one.
 
 ## Start here
 
@@ -26,11 +29,20 @@ If you are new to this, read [`tool-loop`](./tool-loop) first. It is the smalles
 ```
 cd tool-loop
 npm install
-npm test
+export STUB_OPERATOR_ID=op_yourname_toolloop
 npm run demo
 ```
 
-The demo prints the ranking your code produced, with the reason beside each item, and then the receipt.
+Pick an operator id that is yours. The first run registers it and saves your
+keypair to `.stub-keys.json`, which is gitignored. Every run after that uses the
+same identity.
+
+The demo prints the ranking your code produced, with the reason beside each
+item, and then a receipt link anyone can open.
+
+## When you are ready to deploy
+
+The recipes generate a fresh keypair each run, which is right for reading and wrong for production. [`PRODUCTION.md`](./PRODUCTION.md) covers what changes: persisting your identity, where the receipt belongs, what never goes in the free text, and the mistakes we made taking our own agent live.
 
 ## What a stub is
 

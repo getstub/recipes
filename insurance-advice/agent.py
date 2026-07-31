@@ -25,21 +25,22 @@ policies. Do not use this to make a decision about insurance.
 
 import os
 
-from getstub import Stub, influenced
+from getstub import influenced
+from identity import get_stub
 
 from policies import PANEL, find
 
 # The standing mandate, declared once. In regulated advice this is the sentence
 # a compliance team signs off, not something written per recommendation.
-stub = Stub(
+# Your identity, loaded from .stub-keys.json or created on the first run.
+stub = get_stub(
     operator="Fairhaven Advice Agent",
-    operator_id="op_fairhaven_ref",
+    suggestion="op_yourname_fairhaven",
     declared={
         "paid_by": "commission from insurers on the panel",
         "conflicts": ["commission", "partner_only", "own_brand"],
     },
-    principal_salt=os.environ.get("STUB_SALT", "insurance-reference-salt"),
-    registry=os.environ.get("STUB_REGISTRY", "https://api.getstub.dev"),
+    salt="insurance-reference-salt",
 )
 
 

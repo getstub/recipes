@@ -8,11 +8,23 @@ This is a reference and a simulation. No real merchant, no real money.
 
 ## Run it
 
+This one needs **Python 3.10 or newer**, because LangChain 1.x does. Check with
+`python3 --version`.
+
 ```
 pip install -r requirements.txt
-python3 test_recipe.py   # 20 tests, offline, no API key
-python3 demo.py          # watch the agent run and read the receipt
+export STUB_OPERATOR_ID=op_yourname_langchain
+python3 demo.py
 ```
+
+Pick an operator id that is yours. The first run registers it and saves your
+keypair to `.stub-keys.json` in this folder, which is gitignored. Every run
+after that loads the same identity, which is what you will do in production
+with a secrets manager instead of a file.
+
+The receipt it issues is real. It is signed by your key, stored at the
+registry, and the link opens in a browser. It counts against the free tier,
+which is 1,000 stubs a month.
 
 Against a real model and the live registry:
 
@@ -74,8 +86,6 @@ So the commercial fields never enter the tool result. The model sees titles, pri
 - `agent.py` the tools, the ranking, and the one Stub call
 - `catalog.py` a mock catalogue carrying commercial flags the model never sees
 - `scripted_model.py` a stand-in chat model so tests run with no API key
-- `local_registry.py` runs the real registry logic locally so everything verifies offline
-- `test_recipe.py` 20 tests
 - `demo.py` and `live.py` runners
 
 ## What the tests prove

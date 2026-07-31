@@ -10,9 +10,18 @@ This is a reference and a simulation. No real merchant, no real money.
 
 ```
 npm install
-npm test      # 21 tests, offline, no API key
-npm run demo  # watch the agent run and read the receipt
+export STUB_OPERATOR_ID=op_yourname_aisdk
+npm run demo
 ```
+
+Pick an operator id that is yours. The first run registers it and saves your
+keypair to `.stub-keys.json` in this folder, which is gitignored. Every run
+after that loads the same identity, which is what you will do in production
+with a secrets manager instead of a file.
+
+The receipt it issues is real. It is signed by your key, stored at the
+registry, and the link opens in a browser. It counts against the free tier,
+which is 1,000 stubs a month.
 
 Against a real provider and the live registry:
 
@@ -80,8 +89,6 @@ So the commercial fields never enter the tool result. The model sees titles, pri
 - `agent.js` the tools, the ranking, and the one Stub call
 - `catalog.js` a mock catalogue carrying commercial flags the model never sees
 - `mock-model.mjs` built on the SDK's own `MockLanguageModelV4`, so tests need no key
-- `local-registry.mjs` runs the real registry logic in process so everything verifies offline
-- `test.mjs` 21 tests
 - `demo.mjs` and `live.mjs` runners
 
 ## What the tests prove

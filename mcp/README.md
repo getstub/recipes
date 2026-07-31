@@ -21,8 +21,18 @@ What a model can safely do is **check**. That is read only, it cannot be gamed b
 
 ```
 npm install
-npm test    # 21 tests, offline, including a real MCP client handshake over stdio
+export STUB_OPERATOR_ID=op_yourname_mcp
+npm run demo
 ```
+
+Pick an operator id that is yours. The first run registers it and saves your
+keypair to `.stub-keys.json` in this folder, which is gitignored. Every run
+after that loads the same identity, which is what you will do in production
+with a secrets manager instead of a file.
+
+The receipt it issues is real. It is signed by your key, stored at the
+registry, and the link opens in a browser. It counts against the free tier,
+which is 1,000 stubs a month.
 
 ## Add the check server to an agent
 

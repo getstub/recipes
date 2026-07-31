@@ -14,27 +14,33 @@ The model does nothing wrong. It searches, gets a list, and buys the top result,
 
 ```
 npm install
-npm test     # 22 tests, offline, no API key needed
-npm run demo # watch the loop run and print the receipt
+export STUB_OPERATOR_ID=op_yourname_toolloop
+npm run demo
 ```
 
-Against a real model and the live registry:
+Pick an operator id that is yours. The first run registers it and saves your
+keypair to `.stub-keys.json` in this folder, which is gitignored. Every run
+after that loads the same identity, which is what you will do in production
+with a secrets manager instead of a file.
+
+The receipt it issues is real. It is signed by your key, stored at the
+registry, and the link opens in a browser. It counts against the free tier,
+which is 1,000 stubs a month, so a few runs cost you nothing.
+
+With a real model instead of the scripted one:
 
 ```
 export OPENAI_API_KEY=sk-...
 npm run live -- user_demo_7 running shoes under 100
 ```
 
-That issues a real receipt you can open in a browser.
-
 ## Files
 
 - `agent.js` the loop, the tools, the ranking, and the one Stub call
 - `catalog.js` a mock catalog carrying commercial flags the model never sees
-- `mock-model.js` a scripted stand-in so tests run with no API key
+- `mock-model.js` a scripted stand-in so the demo runs with no model key
 - `openai-model.js` the real adapter, same shape, swap it in
-- `test.mjs` 22 tests covering the tool schema, what reaches the model, the disclosures, privacy, and integrity
-- `local-registry.mjs` runs real registry logic in process so everything verifies offline
+- `identity.mjs` loads your keypair, or creates and saves one on first run
 
 ## The one line
 
@@ -56,14 +62,12 @@ await stub.issue({
 });
 ```
 
-## What the tests prove
+## What to look at when you run it
 
-Worth running rather than reading. Among the 22:
-
-- the commercial fields never reach the model, only your ranker sees them
-- the paid item ranked first, and the model bought what the ranking surfaced
-- the receipt records exactly the influences that applied, no more
-- the raw user id appears nowhere in the record, only a digest
-- when the model picks an uninfluenced item, the receipt discloses nothing, and that empty disclosure sits next to the operator's declared conflicts as signed proof
+- the commercial flags in `catalog.js` never reach the model, only your ranker sees them
+- the paid item ranks first, and the model buys what the ranking surfaced
+- the receipt records the influences that actually applied, and nothing else
+- the raw user id appears nowhere on the record, only a digest
+- run it with a query where nothing paid, and the receipt discloses nothing. That empty disclosure is signed, and it sits next to the conflicts you declared at registration.
 
 Copyright Stub 2026

@@ -15,10 +15,19 @@ Buying the wrong running shoe costs you forty pounds. Buying the wrong life poli
 ## Run it
 
 ```
-pip install getstub
-python3 test_recipe.py   # 17 tests, offline
-python3 demo.py          # watch the recommendation and read the receipt
+pip install -r requirements.txt
+export STUB_OPERATOR_ID=op_yourname_fairhaven
+python3 demo.py
 ```
+
+Pick an operator id that is yours. The first run registers it and saves your
+keypair to `.stub-keys.json` in this folder, which is gitignored. Every run
+after that loads the same identity, which is what you will do in production
+with a secrets manager instead of a file.
+
+The receipt it issues is real. It is signed by your key, stored at the
+registry, and the link opens in a browser. It counts against the free tier,
+which is 1,000 stubs a month.
 
 ## What the demo shows
 
@@ -83,8 +92,6 @@ In regulated advice the mandate is the natural fit for something a compliance te
 
 - `agent.py` the recommendation engine and the one Stub call
 - `policies.py` a mock panel carrying commission rates and panel membership
-- `local_registry.py` runs the real registry logic locally so everything verifies offline
-- `test_recipe.py` 17 tests
 - `demo.py` the runner
 
 ## What the tests prove

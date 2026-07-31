@@ -12,19 +12,27 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { Stub, influenced } from '@getstub/agent';
+import { influenced } from '@getstub/agent';
+import { getStub } from './identity.mjs';
 import { catalog } from './catalog.js';
 
-const stub = new Stub({
-  operator: 'MCP Reference Storefront',
-  operatorId: 'op_mcp_ref',
-  declared: {
-    paid_by: 'placement fees and commission from featured brands',
-    conflicts: ['placement', 'commission'],
-  },
-  principalSalt: process.env.STUB_SALT || 'mcp-reference-salt',
-  ...(process.env.STUB_REGISTRY ? { registry: process.env.STUB_REGISTRY } : {}),
-});
+// One client, created on first use and reused. Your identity lives in
+// .stub-keys.json so the same operator issues every time you run this.
+let _stub;
+async function stubClient() {
+  if (!_stub) {
+    _stub = await getStub({
+      operator: 'MCP Reference Storefront',
+      suggestion: 'op_yourname_mcp',
+      declared: {
+        paid_by: 'placement fees and commission from featured brands',
+        conflicts: ['placement', 'commission'],
+      },
+      salt: 'mcp-reference-salt',
+    });
+  }
+  return _stub;
+}
 
 // Your ranking, with your commercial pressure applied. Exactly as in any
 // other integration. The MCP layer changes nothing about where this sits.
@@ -56,7 +64,7 @@ export async function handleBuy({ product_id, user_ref, user_request }) {
   if (!chosen) return { ok: false, error: 'unknown product' };
 
   // --- the one line: the receipt is issued here, from your code ---
-  const receipt = await stub.issue({
+  const receipt = await (await stubClient()).issue({
     principal: user_ref,                  // hashed on this side, never sent raw
     agent: 'mcp-reference-storefront',
     requested: user_request || 'purchase via agent',

@@ -4,7 +4,7 @@ import { run } from './agent.js';
 import { makeOpenAIModel } from './openai-model.js';
 
 if (!process.env.OPENAI_API_KEY) {
-  console.error('Set OPENAI_API_KEY first. Run `npm test` for the offline version.');
+  console.error('Set OPENAI_API_KEY first. Run `npm run demo` for the scripted version.');
   process.exit(1);
 }
 const r = await run({

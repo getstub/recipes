@@ -8,7 +8,7 @@ Issues a real receipt you can open in a browser.
 import os, sys
 
 if not os.environ.get("OPENAI_API_KEY"):
-    sys.exit("Set OPENAI_API_KEY first. Run `python3 demo.py` for the offline version.")
+    sys.exit("Set OPENAI_API_KEY first. Run `python3 demo.py` for the scripted version.")
 
 from langchain_openai import ChatOpenAI
 import agent as A
