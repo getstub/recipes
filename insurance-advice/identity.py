@@ -45,6 +45,14 @@ def get_stub(operator, suggestion, declared, salt):
     )
     stub = Stub(**kwargs)
 
+    # A keypair in the environment wins over one on disk. This is the shape a
+    # real deployment uses, where the key comes from a secrets manager rather
+    # than a file next to the code, and it is what lets this run in CI without
+    # writing a private key onto a build machine.
+    if os.environ.get("STUB_KEYPAIR"):
+        stub.load_keypair(json.loads(os.environ["STUB_KEYPAIR"]))
+        return stub
+
     if os.path.exists(KEYFILE):
         with open(KEYFILE) as fh:
             stub.load_keypair(json.load(fh))

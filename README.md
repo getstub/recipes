@@ -1,5 +1,7 @@
 # Stub recipes
 
+[![Stub](https://api.getstub.dev/badge/op_recipes.svg)](https://getstub.dev/o/op_recipes)
+
 Working reference integrations for [Stub](https://getstub.dev), the allegiance receipt registry for AI agents.
 
 Each recipe is a runnable agent with Stub wired in at the line where the ranking picks a winner. Clone one, run it, read the receipt it produces.
@@ -21,6 +23,16 @@ Every recipe runs against the live registry and issues real receipts, under an
 operator id you choose. The free tier is 1,000 stubs a month, so trying all six
 costs nothing. There is no offline mode and no mock registry: the only way to
 issue a stub is to issue one.
+
+## The badge above
+
+These recipes are exercised against the live registry every day, and the badge
+is drawn from the receipts that run produces. It is not a build status: it says
+the reference agents ranked their catalogues, disclosed what influenced the
+result, and issued signed records anyone can open. Click it to read them.
+
+If it ever goes quiet, the recipes stopped working and this repo is telling you
+so before you clone it.
 
 ## Start here
 

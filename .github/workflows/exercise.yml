@@ -1,0 +1,91 @@
+# Runs all six reference integrations against the live registry, once a day.
+#
+# This is not a mock. Each recipe ranks its catalogue, applies the same
+# influence flags a reader would see, and issues a real signed receipt under
+# op_recipes. So the badge on each README means these references were exercised
+# recently and the receipts are there to read, not that a test suite went green.
+#
+# The scripted models are used deliberately: no model key, no cost, and the same
+# ranking every run, which makes a change in the output a change in the recipe.
+
+name: exercise the recipes
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: exercise
+  cancel-in-progress: false
+
+jobs:
+  javascript:
+    runs-on: ubuntu-latest
+    env:
+      STUB_OPERATOR_ID: op_recipes
+      STUB_KEYPAIR: ${{ secrets.STUB_KEYPAIR }}
+      STUB_SALT: ${{ secrets.STUB_SALT }}
+    strategy:
+      fail-fast: false          # one broken recipe should not hide the others
+      matrix:
+        recipe: [acp-commerce, tool-loop, vercel-ai-sdk]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: install
+        working-directory: ${{ matrix.recipe }}
+        run: npm install --no-fund --no-audit
+      - name: run against the live registry
+        working-directory: ${{ matrix.recipe }}
+        run: npm run demo
+
+  # The MCP recipe is a long-running server rather than a one-shot run, so it
+  # cannot issue on a schedule without a client driving it. Its tests run here
+  # instead, which is the honest version of covering it.
+  mcp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - working-directory: mcp
+        run: npm install --no-fund --no-audit && npm test
+
+  python:
+    runs-on: ubuntu-latest
+    env:
+      STUB_OPERATOR_ID: op_recipes
+      STUB_KEYPAIR: ${{ secrets.STUB_KEYPAIR }}
+      STUB_SALT: ${{ secrets.STUB_SALT }}
+    strategy:
+      fail-fast: false
+      matrix:
+        recipe: [langchain-python, insurance-advice]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: install
+        working-directory: ${{ matrix.recipe }}
+        run: pip install -r requirements.txt
+      - name: run against the live registry
+        working-directory: ${{ matrix.recipe }}
+        run: python3 demo.py
+
+  standing:
+    # Reports what the run produced. The badge is drawn by the registry, so this
+    # cannot influence it; it exists so a failure shows up here rather than only
+    # as a badge that quietly went grey a month later.
+    needs: [javascript, mcp, python]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: read the operator record
+        run: |
+          curl -sS https://api.getstub.dev/operator/op_recipes \
+            | python3 -c "import json,sys; p=json.load(sys.stdin)['profile']; print(f\"standing={p['standing']} issued={p['stubsIssued']} last={p['lastIssued']}\")"

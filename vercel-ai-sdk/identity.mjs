@@ -49,6 +49,14 @@ export async function getStub({ operator, suggestion, declared, salt }) {
     ...(registry ? { registry } : {}),
   };
 
+  // A keypair in the environment wins over one on disk. This is the shape a
+  // real deployment uses, where the key comes from a secrets manager rather
+  // than a file next to the code, and it is what lets this run in CI without
+  // writing a private key onto a build machine.
+  if (process.env.STUB_KEYPAIR) {
+    return await Stub.fromKeys(JSON.parse(process.env.STUB_KEYPAIR), opts);
+  }
+
   if (existsSync(KEYFILE)) {
     const jwk = JSON.parse(readFileSync(KEYFILE, 'utf8'));
     return await Stub.fromKeys(jwk, opts);
