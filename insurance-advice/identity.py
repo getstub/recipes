@@ -10,6 +10,7 @@ secrets manager.
 """
 
 import json
+import base64
 import os
 import sys
 
@@ -33,6 +34,27 @@ def _require_operator_id(suggestion):
     sys.exit(1)
 
 
+
+def _normalise_keypair(kp):
+    """Accept a keypair exported by either client.
+
+    The Python client stores the raw Ed25519 private bytes; the JavaScript one
+    stores a JWK. They are the same 32 bytes in different wrappers, so one
+    identity should work from either language. This converts the JWK form,
+    where `d` is the private key base64url encoded.
+    """
+    if "private_raw_b64" in kp:
+        return kp
+    d = kp.get("privateKey", {}).get("d")
+    if not d:
+        raise ValueError(
+            "STUB_KEYPAIR is not a keypair this client recognises. Expected either "
+            "{'private_raw_b64': ...} from getstub, or the JWK form from @getstub/agent."
+        )
+    raw = base64.urlsafe_b64decode(d + "=" * (-len(d) % 4))
+    return {"private_raw_b64": base64.b64encode(raw).decode()}
+
+
 def get_stub(operator, suggestion, declared, salt):
     """Return a Stub client with a stable identity across runs."""
     operator_id = _require_operator_id(suggestion)
@@ -50,7 +72,7 @@ def get_stub(operator, suggestion, declared, salt):
     # than a file next to the code, and it is what lets this run in CI without
     # writing a private key onto a build machine.
     if os.environ.get("STUB_KEYPAIR"):
-        stub.load_keypair(json.loads(os.environ["STUB_KEYPAIR"]))
+        stub.load_keypair(_normalise_keypair(json.loads(os.environ["STUB_KEYPAIR"])))
         return stub
 
     if os.path.exists(KEYFILE):
