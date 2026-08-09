@@ -100,3 +100,38 @@ Worth running rather than reading. Among the 20:
 - an uninfluenced purchase yields a clean receipt with the declared conflicts still on record
 
 Copyright Stub 2026
+
+---
+
+## New here?
+
+[Stub](https://getstub.dev) is an allegiance receipt for AI agents. When an agent
+acts on someone's behalf, it issues a small signed record of what it did and what
+commercial influence applied. The person served checks that record at a neutral
+registry rather than on the operator's own servers, so the operator's word is
+never what is being trusted.
+
+The load-bearing field is `not_disclosed`. It is where the agent records what it
+held back: partner-only searches, paid placement, a commission the user never
+saw. An honest agent leaves it empty, and an empty field is itself signed proof
+that nothing applied.
+
+Open a real receipt before installing anything:
+
+https://api.getstub.dev/check/72b4baee1719ec34acc5df5c514a12fd2e19b9a6776de4b45706988f765c77d8
+
+**The Python client:** `pip install getstub`
+
+**Closest to this recipe:**
+
+- [`insurance-advice`](../insurance-advice) the same primitive outside commerce
+- [`tool-loop`](../tool-loop) the JavaScript version with no framework
+
+- All six recipes: [github.com/getstub/recipes](https://github.com/getstub/recipes)
+- Docs and quickstart: [getstub.dev](https://getstub.dev)
+- What the badge below means: [getstub.dev/mark](https://getstub.dev/mark)
+
+[![Stub](https://api.getstub.dev/badge/op_recipes.svg)](https://getstub.dev/o/op_recipes)
+
+These recipes are run against the live registry every day. The badge is drawn
+from the receipts that run produces, so if it goes quiet, something here broke.
