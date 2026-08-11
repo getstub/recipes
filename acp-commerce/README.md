@@ -92,7 +92,7 @@ commercial influence applied. The person served checks that record at a neutral
 registry rather than on the operator's own servers, so the operator's word is
 never what is being trusted.
 
-The load-bearing field is `not_disclosed`. It is where the agent records what it
+The most important field is `not_disclosed`. It is where the agent records what it
 held back: partner-only searches, paid placement, a commission the user never
 saw. An honest agent leaves it empty, and an empty field is itself signed proof
 that nothing applied.
