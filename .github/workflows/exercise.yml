@@ -26,6 +26,13 @@ jobs:
       STUB_OPERATOR_ID: op_recipes
       STUB_KEYPAIR: ${{ secrets.STUB_KEYPAIR }}
       STUB_SALT: ${{ secrets.STUB_SALT }}
+      # Each recipe declares a fictional merchant's mandate, and register()
+      # rewrites name and mandate on every call. Without these, the last recipe
+      # to finish decides what op_recipes says about its own business, and it
+      # says something untrue.
+      STUB_OPERATOR_NAME: Stub reference integrations
+      STUB_DECLARED: >-
+        {"paid_by":"nobody, this operator is run by Stub to exercise the public reference integrations","conflicts":["commission","placement","partner_only"],"note":"The conflicts above are simulated. This operator runs the recipes at github.com/getstub/recipes, whose agents rank fictional catalogues with commission and placement flags set, so its receipts carry those disclosures. No real merchant pays anything."}
     strategy:
       fail-fast: false          # one broken recipe should not hide the others
       matrix:
@@ -66,6 +73,13 @@ jobs:
       STUB_OPERATOR_ID: op_recipes
       STUB_KEYPAIR: ${{ secrets.STUB_KEYPAIR }}
       STUB_SALT: ${{ secrets.STUB_SALT }}
+      # Each recipe declares a fictional merchant's mandate, and register()
+      # rewrites name and mandate on every call. Without these, the last recipe
+      # to finish decides what op_recipes says about its own business, and it
+      # says something untrue.
+      STUB_OPERATOR_NAME: Stub reference integrations
+      STUB_DECLARED: >-
+        {"paid_by":"nobody, this operator is run by Stub to exercise the public reference integrations","conflicts":["commission","placement","partner_only"],"note":"The conflicts above are simulated. This operator runs the recipes at github.com/getstub/recipes, whose agents rank fictional catalogues with commission and placement flags set, so its receipts carry those disclosures. No real merchant pays anything."}
     strategy:
       fail-fast: false
       matrix:

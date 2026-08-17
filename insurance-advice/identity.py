@@ -58,10 +58,23 @@ def _normalise_keypair(kp):
 def get_stub(operator, suggestion, declared, salt):
     """Return a Stub client with a stable identity across runs."""
     operator_id = _require_operator_id(suggestion)
+
+    # The recipe's name and mandate describe a fictional merchant, which is right
+    # for a reference integration and wrong for whoever is actually running it.
+    # register() updates both every time it is called, so without these overrides
+    # the last recipe to run decides what an operator's public page says about
+    # their business. Set them if you run several recipes under one id.
+    name = os.environ.get("STUB_OPERATOR_NAME") or operator
+    mandate = (
+        json.loads(os.environ["STUB_DECLARED"])
+        if os.environ.get("STUB_DECLARED")
+        else declared
+    )
+
     kwargs = dict(
-        operator=operator,
+        operator=name,
         operator_id=operator_id,
-        declared=declared,
+        declared=mandate,
         principal_salt=os.environ.get("STUB_SALT", salt),
         registry=os.environ.get("STUB_REGISTRY", "https://api.getstub.dev"),
     )

@@ -41,10 +41,21 @@ function requireOperatorId(suggestion) {
 export async function getStub({ operator, suggestion, declared, salt }) {
   const operatorId = requireOperatorId(suggestion);
   const registry = process.env.STUB_REGISTRY;      // defaults to the live registry
+
+  // The recipe's name and mandate describe a fictional merchant, which is right
+  // for a reference integration and wrong for whoever is actually running it.
+  // register() updates both every time it is called, so without these overrides
+  // the last recipe to run decides what an operator's public page says about
+  // their business. Set them if you are running several recipes under one id.
+  const name = process.env.STUB_OPERATOR_NAME || operator;
+  const mandate = process.env.STUB_DECLARED
+    ? JSON.parse(process.env.STUB_DECLARED)
+    : declared;
+
   const opts = {
-    operator,
+    operator: name,
     operatorId,
-    declared,
+    declared: mandate,
     principalSalt: process.env.STUB_SALT || salt,
     ...(registry ? { registry } : {}),
   };
