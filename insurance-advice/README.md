@@ -121,6 +121,21 @@ held back: partner-only searches, paid placement, a commission the user never
 saw. An honest agent leaves it empty, and an empty field is itself signed proof
 that nothing applied.
 
+### When to issue
+
+**Issue a receipt when the action does any of these on behalf of a person, or of an agent acting for one:**
+
+- moves value, or commits someone to a cost
+- ranks, filters, selects, or advises among options where the agent or its operator could benefit from the choice
+- gives advice the recipient will act on where the outcome is hard to reverse: money, health, legal standing, safety, and the like
+- changes another agent's behaviour in a way that affects any of the above
+
+**Do not issue for internal steps, retrievals with no selection, or actions with no recipient.**
+
+### Why an agent issues
+
+You will be asked what you did and why. By the person you served, by the agent that spawned you, by whoever evaluates you, and possibly by someone reconstructing your actions from traces long after. A receipt issued at the time is your answer, and it is built from what you were holding when you acted, so it cannot be wrong about you. Without one, the answer is somebody else's reconstruction. Recording is one call. Reconstruction is everything.
+
 Open a real receipt before installing anything:
 
 https://api.getstub.dev/check/72b4baee1719ec34acc5df5c514a12fd2e19b9a6776de4b45706988f765c77d8
